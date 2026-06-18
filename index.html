@@ -500,7 +500,7 @@
         <div class="field">
           <div class="field-head">
             <label for="years">위스키 경력</label>
-            <span class="field-sub">최대 20년</span>
+            <span class="field-sub">만점 기준: 20년</span>
           </div>
           <div class="input-wrap">
             <input id="years" type="text" inputmode="decimal" value="0" aria-label="위스키 경력 연수" autocomplete="off" />
@@ -512,7 +512,7 @@
         <div class="field">
           <div class="field-head">
             <label for="reviews">테이스팅 리뷰 개수</label>
-            <span class="field-sub">최대 1,000병</span>
+            <span class="field-sub">만점 기준: 1,000병</span>
           </div>
           <div class="input-wrap">
             <input id="reviews" type="text" inputmode="numeric" value="0" aria-label="테이스팅 리뷰 개수" autocomplete="off" />
@@ -524,7 +524,7 @@
         <div class="field wide">
           <div class="field-head">
             <label for="spending">누적 소비액</label>
-            <span class="field-sub">원화 기준</span>
+            <span class="field-sub">만점 기준: 1억 원 이상</span>
           </div>
           <p class="field-note">
             위스키와 관련한 모든 지출 금액 합산<br />
@@ -540,7 +540,6 @@
         <div class="field">
           <div class="field-head">
             <label for="countries">마셔본 국가 수</label>
-            <span class="field-sub">중복 제외</span>
           </div>
           <div class="input-wrap">
             <input id="countries" type="text" inputmode="numeric" value="0" aria-label="마셔본 국가 수" autocomplete="off" />
@@ -552,7 +551,6 @@
         <div class="field">
           <div class="field-head">
             <label for="categories">마셔본 카테고리 수</label>
-            <span class="field-sub">중복 제외</span>
           </div>
           <div class="input-wrap">
             <input id="categories" type="text" inputmode="numeric" value="0" aria-label="마셔본 카테고리 수" autocomplete="off" />
@@ -564,7 +562,6 @@
         <div class="field">
           <div class="field-head">
             <label for="distilleries">마셔본 증류소·브랜드 수</label>
-            <span class="field-sub">중복 제외</span>
           </div>
           <div class="input-wrap">
             <input id="distilleries" type="text" inputmode="numeric" value="0" aria-label="마셔본 증류소 또는 브랜드 수" autocomplete="off" />
@@ -576,7 +573,6 @@
         <div class="field">
           <div class="field-head">
             <label for="caskTypes">마셔본 캐스크 타입 수</label>
-            <span class="field-sub">중복 제외</span>
           </div>
           <div class="input-wrap">
             <input id="caskTypes" type="text" inputmode="numeric" value="0" aria-label="마셔본 캐스크 타입 수" autocomplete="off" />
@@ -735,9 +731,9 @@
 
       return (
         yearsScore * 0.10
-        + spendingScore * 0.45
+        + spendingScore * 0.40
         + reviewsScore * 0.25
-        + diversityScore * 0.20
+        + diversityScore * 0.25
       );
     }
 
