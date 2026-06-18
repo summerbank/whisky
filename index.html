@@ -4,14 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>위스키 고인물 지수 계산기</title>
-  <meta name="description" content="시간, 소비, 테이스팅 리뷰, 다양성 기준으로 위스키 고인물 지수를 계산하는 웹 계산기" />
+  <meta name="description" content="위스키 경력, 소비액, 리뷰 수, 경험 다양성을 입력해 위스키 고인물 지수를 계산합니다." />
   <meta name="theme-color" content="#0b0f19" />
 
   <style>
     :root {
       --bg: #0b0f19;
-      --bg-soft: #111827;
-      --card: rgba(17, 24, 39, 0.72);
+      --card: rgba(17, 24, 39, 0.76);
       --card-strong: rgba(24, 32, 48, 0.94);
       --line: rgba(255, 255, 255, 0.10);
       --line-strong: rgba(255, 255, 255, 0.18);
@@ -20,8 +19,6 @@
       --muted-2: #64748b;
       --accent: #f59e0b;
       --accent-2: #fbbf24;
-      --danger: #fb7185;
-      --good: #34d399;
       --shadow: 0 24px 90px rgba(0, 0, 0, 0.45);
       --radius-lg: 28px;
       --radius-md: 18px;
@@ -149,7 +146,7 @@
       word-break: keep-all;
     }
 
-    .formula {
+    .feature-list {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
@@ -166,11 +163,6 @@
       background: rgba(255, 255, 255, 0.055);
       color: #dbeafe;
       font-size: 14px;
-      font-weight: 700;
-    }
-
-    .chip strong {
-      color: #fde68a;
       font-weight: 800;
     }
 
@@ -251,6 +243,7 @@
       color: var(--muted);
       font-size: 14px;
       line-height: 1.6;
+      word-break: keep-all;
     }
 
     .grid {
@@ -308,40 +301,44 @@
       letter-spacing: -0.025em;
     }
 
-    .field-score {
-      color: #fde68a;
-      font-weight: 900;
-      font-variant-numeric: tabular-nums;
+    .field-sub {
+      color: var(--muted-2);
+      font-size: 13px;
+      font-weight: 750;
     }
 
-    .control-row {
-      display: grid;
-      grid-template-columns: 1fr 150px;
-      gap: 14px;
-      align-items: center;
+    .input-wrap {
+      position: relative;
     }
 
-    input[type="range"] {
+    .input-wrap input {
       width: 100%;
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
-
-    input[type="number"] {
-      width: 100%;
-      padding: 12px 12px;
+      padding: 15px 46px 15px 14px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--line);
       background: rgba(2, 6, 23, 0.66);
       color: var(--text);
       outline: none;
-      font-weight: 800;
+      font-size: 19px;
+      font-weight: 900;
       font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
     }
 
-    input[type="number"]:focus {
+    .input-wrap input:focus {
       border-color: rgba(245, 158, 11, 0.62);
       box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.12);
+    }
+
+    .unit {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 850;
+      pointer-events: none;
     }
 
     .hint {
@@ -349,52 +346,35 @@
       color: var(--muted-2);
       font-size: 13px;
       line-height: 1.5;
+      word-break: keep-all;
     }
 
-    .breakdown {
+    .summary {
       display: grid;
       gap: 12px;
     }
 
-    .break-row {
+    .summary-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
       padding: 16px;
       border-radius: var(--radius-md);
       border: 1px solid var(--line);
       background: rgba(255, 255, 255, 0.04);
     }
 
-    .break-row-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .break-name {
+    .summary-name {
       color: #e2e8f0;
       font-weight: 850;
     }
 
-    .break-num {
-      color: var(--muted);
-      font-weight: 800;
+    .summary-value {
+      color: #fde68a;
+      font-weight: 900;
       font-variant-numeric: tabular-nums;
-    }
-
-    .mini-meter {
-      height: 8px;
-      overflow: hidden;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .mini-fill {
-      height: 100%;
-      width: 0%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, rgba(245, 158, 11, 0.65), rgba(251, 191, 36, 0.95));
-      transition: width 240ms ease;
+      text-align: right;
     }
 
     .rank-table {
@@ -426,14 +406,6 @@
     .rank-range {
       font-variant-numeric: tabular-nums;
       color: #fde68a;
-    }
-
-    .footer {
-      margin-top: 20px;
-      color: var(--muted-2);
-      text-align: center;
-      font-size: 13px;
-      line-height: 1.6;
     }
 
     .button-row {
@@ -513,10 +485,6 @@
         border-radius: 22px;
       }
 
-      .control-row {
-        grid-template-columns: 1fr;
-      }
-
       .panel-title {
         align-items: flex-start;
         flex-direction: column;
@@ -524,6 +492,14 @@
 
       .rank-row {
         grid-template-columns: 82px 1fr;
+      }
+
+      .summary-row {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-value {
+        text-align: left;
       }
     }
   </style>
@@ -537,15 +513,15 @@
           <div class="eyebrow"><span class="eyebrow-dot"></span> Whisky Nerd Index</div>
           <h1>위스키<br />고인물 지수 계산기</h1>
           <p>
-            시간, 소비, 테이스팅 리뷰, 다양성을 기준으로 위스키 취미의 깊이를 계산합니다.
-            입력값을 바꾸면 점수와 등급이 바로 갱신됩니다.
+            위스키 경력, 누적 소비액, 테이스팅 리뷰 개수, 경험한 국가·카테고리·증류소·캐스크 타입을 입력하면
+            현재 위스키 취미 레벨을 계산합니다.
           </p>
 
-          <div class="formula" aria-label="계산식">
-            <span class="chip">시간 <strong>10%</strong></span>
-            <span class="chip">소비 <strong>45%</strong></span>
-            <span class="chip">리뷰 <strong>25%</strong></span>
-            <span class="chip">다양성 <strong>20%</strong></span>
+          <div class="feature-list" aria-label="입력 항목">
+            <span class="chip">경력</span>
+            <span class="chip">소비액</span>
+            <span class="chip">리뷰 개수</span>
+            <span class="chip">경험 다양성</span>
           </div>
         </div>
       </div>
@@ -565,14 +541,13 @@
           </div>
 
           <div class="score-detail">
-            <div id="scoreSentence">입력값을 조정하면 결과가 바로 계산됩니다.</div>
-            <div id="formulaSentence">공식: 시간×0.10 + 소비×0.45 + 리뷰×0.25 + 다양성×0.20</div>
+            <div id="scoreSentence">입력값을 넣으면 결과가 바로 계산됩니다.</div>
           </div>
         </div>
 
         <div class="button-row">
           <button class="btn primary" id="copyBtn" type="button">결과 복사</button>
-          <button class="btn" id="resetBtn" type="button">기본값 복원</button>
+          <button class="btn" id="resetBtn" type="button">초기화</button>
         </div>
       </aside>
     </section>
@@ -581,97 +556,118 @@
       <section class="panel">
         <div class="panel-title">
           <h2>입력값</h2>
-          <small>0~100점으로 정규화 후 가중합</small>
+          <small>아는 값만 입력해도 계산됩니다.</small>
         </div>
 
         <div class="inputs">
           <div class="field">
             <div class="field-head">
-              <label for="years">시간</label>
-              <span class="field-score" id="yearsScoreText">15.0점</span>
+              <label for="years">위스키 경력</label>
+              <span class="field-sub">0~20년</span>
             </div>
-            <div class="control-row">
-              <input id="years" type="range" min="0" max="20" step="0.1" value="3" />
-              <input id="yearsNumber" type="number" min="0" max="20" step="0.1" value="3" aria-label="위스키 경력 연수" />
+            <div class="input-wrap">
+              <input id="years" type="text" inputmode="decimal" value="0" aria-label="위스키 경력 연수" autocomplete="off" />
+              <span class="unit">년</span>
             </div>
-            <div class="hint">시간 지수 = min(100, 경력 연수 / 20 × 100)</div>
+            <div class="hint">소수 입력 가능. 예: 3.5년</div>
           </div>
 
           <div class="field">
             <div class="field-head">
               <label for="spending">누적 소비액</label>
-              <span class="field-score" id="spendingScoreText">82.5점</span>
+              <span class="field-sub">원화 기준</span>
             </div>
-            <div class="control-row">
-              <input id="spending" type="range" min="0" max="100000000" step="100000" value="20000000" />
-              <input id="spendingNumber" type="number" min="0" step="100000" value="20000000" aria-label="누적 소비액 원화" />
+            <div class="input-wrap">
+              <input id="spending" type="text" inputmode="numeric" value="0" aria-label="누적 소비액 원화" autocomplete="off" />
+              <span class="unit">원</span>
             </div>
-            <div class="hint">소비 지수 = min(100, max(0, log10(누적 소비액 원화) × 25 - 100))</div>
+            <div class="hint">큰 숫자는 자동으로 쉼표가 들어갑니다. 예: 20,000,000</div>
           </div>
 
           <div class="field">
             <div class="field-head">
-              <label for="reviews">테이스팅 리뷰</label>
-              <span class="field-score" id="reviewsScoreText">10.0점</span>
+              <label for="reviews">테이스팅 리뷰 개수</label>
+              <span class="field-sub">0~1,000병</span>
             </div>
-            <div class="control-row">
-              <input id="reviews" type="range" min="0" max="1000" step="1" value="100" />
-              <input id="reviewsNumber" type="number" min="0" max="1000" step="1" value="100" aria-label="테이스팅 리뷰 병 수" />
+            <div class="input-wrap">
+              <input id="reviews" type="text" inputmode="numeric" value="0" aria-label="테이스팅 리뷰 개수" autocomplete="off" />
+              <span class="unit">병</span>
             </div>
-            <div class="hint">리뷰 지수 = min(100, 리뷰 작성 병 수 / 1000 × 100)</div>
+            <div class="hint">기록으로 남긴 리뷰 개수를 입력합니다.</div>
           </div>
 
           <div class="field">
             <div class="field-head">
-              <label for="diversity">다양성 지수</label>
-              <span class="field-score" id="diversityScoreText">100.0점</span>
+              <label for="countries">마셔본 국가 수</label>
+              <span class="field-sub">예: 스코틀랜드, 미국, 일본</span>
             </div>
-            <div class="control-row">
-              <input id="diversity" type="range" min="0" max="100" step="1" value="100" />
-              <input id="diversityNumber" type="number" min="0" max="100" step="1" value="100" aria-label="다양성 지수" />
+            <div class="input-wrap">
+              <input id="countries" type="text" inputmode="numeric" value="0" aria-label="마셔본 국가 수" autocomplete="off" />
+              <span class="unit">개</span>
             </div>
-            <div class="hint">다양성 지수 = 0~100점 직접 입력</div>
+          </div>
+
+          <div class="field">
+            <div class="field-head">
+              <label for="categories">마셔본 카테고리 수</label>
+              <span class="field-sub">예: 싱글몰트, 버번, 라이</span>
+            </div>
+            <div class="input-wrap">
+              <input id="categories" type="text" inputmode="numeric" value="0" aria-label="마셔본 카테고리 수" autocomplete="off" />
+              <span class="unit">개</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-head">
+              <label for="distilleries">마셔본 증류소·브랜드 수</label>
+              <span class="field-sub">중복 제외</span>
+            </div>
+            <div class="input-wrap">
+              <input id="distilleries" type="text" inputmode="numeric" value="0" aria-label="마셔본 증류소 또는 브랜드 수" autocomplete="off" />
+              <span class="unit">개</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-head">
+              <label for="caskTypes">마셔본 캐스크 타입 수</label>
+              <span class="field-sub">예: 버번, 셰리, 포트</span>
+            </div>
+            <div class="input-wrap">
+              <input id="caskTypes" type="text" inputmode="numeric" value="0" aria-label="마셔본 캐스크 타입 수" autocomplete="off" />
+              <span class="unit">개</span>
+            </div>
           </div>
         </div>
       </section>
 
       <aside class="panel">
         <div class="panel-title">
-          <h2>점수 분해</h2>
-          <small>가중치 반영값</small>
+          <h2>입력 요약</h2>
+          <small>현재 입력값</small>
         </div>
 
-        <div class="breakdown">
-          <div class="break-row">
-            <div class="break-row-top">
-              <span class="break-name">시간 지수</span>
-              <span class="break-num" id="yearsBreak">15.0 × 0.10 = 1.5</span>
-            </div>
-            <div class="mini-meter"><div class="mini-fill" id="yearsFill"></div></div>
+        <div class="summary">
+          <div class="summary-row">
+            <span class="summary-name">위스키 경력</span>
+            <span class="summary-value" id="summaryYears">0년</span>
           </div>
-
-          <div class="break-row">
-            <div class="break-row-top">
-              <span class="break-name">소비 지수</span>
-              <span class="break-num" id="spendingBreak">82.5 × 0.45 = 37.1</span>
-            </div>
-            <div class="mini-meter"><div class="mini-fill" id="spendingFill"></div></div>
+          <div class="summary-row">
+            <span class="summary-name">누적 소비액</span>
+            <span class="summary-value" id="summarySpending">0원</span>
           </div>
-
-          <div class="break-row">
-            <div class="break-row-top">
-              <span class="break-name">테이스팅 리뷰 지수</span>
-              <span class="break-num" id="reviewsBreak">10.0 × 0.25 = 2.5</span>
-            </div>
-            <div class="mini-meter"><div class="mini-fill" id="reviewsFill"></div></div>
+          <div class="summary-row">
+            <span class="summary-name">테이스팅 리뷰</span>
+            <span class="summary-value" id="summaryReviews">0병</span>
           </div>
-
-          <div class="break-row">
-            <div class="break-row-top">
-              <span class="break-name">다양성 지수</span>
-              <span class="break-num" id="diversityBreak">100.0 × 0.20 = 20.0</span>
-            </div>
-            <div class="mini-meter"><div class="mini-fill" id="diversityFill"></div></div>
+          <div class="summary-row">
+            <span class="summary-name">국가 / 카테고리</span>
+            <span class="summary-value" id="summaryCountryCategory">0개 / 0개</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-name">증류소·브랜드 / 캐스크 타입</span>
+            <span class="summary-value" id="summaryDistilleryCask">0개 / 0개</span>
           </div>
         </div>
 
@@ -685,37 +681,24 @@
         </div>
       </aside>
     </section>
-
-    <footer class="footer">
-      GitHub Pages용 정적 페이지입니다. <code>index.html</code> 하나만 올리면 작동합니다.
-    </footer>
   </main>
 
   <div class="toast" id="toast">복사했습니다.</div>
 
   <script>
-    const WEIGHTS = {
-      years: 0.10,
-      spending: 0.45,
-      reviews: 0.25,
-      diversity: 0.20,
-    };
-
     const DEFAULTS = {
-      years: 3,
-      spending: 20000000,
-      reviews: 100,
-      diversity: 100,
+      years: 0,
+      spending: 0,
+      reviews: 0,
+      countries: 0,
+      categories: 0,
+      distilleries: 0,
+      caskTypes: 0,
     };
 
     const $ = (id) => document.getElementById(id);
 
-    const fields = {
-      years: [$("years"), $("yearsNumber")],
-      spending: [$("spending"), $("spendingNumber")],
-      reviews: [$("reviews"), $("reviewsNumber")],
-      diversity: [$("diversity"), $("diversityNumber")],
-    };
+    const inputIds = Object.keys(DEFAULTS);
 
     function clamp(value, min, max) {
       const n = Number(value);
@@ -723,12 +706,42 @@
       return Math.min(max, Math.max(min, n));
     }
 
-    function formatMoney(value) {
-      return new Intl.NumberFormat("ko-KR").format(Math.round(value)) + "원";
+    function digitsOnly(value) {
+      return String(value).replace(/[^\d]/g, "");
     }
 
-    function formatNumber(value, digit = 1) {
-      return Number(value).toFixed(digit);
+    function decimalOnly(value) {
+      let cleaned = String(value).replace(/[^\d.]/g, "");
+      const parts = cleaned.split(".");
+      if (parts.length > 2) {
+        cleaned = parts[0] + "." + parts.slice(1).join("");
+      }
+      return cleaned;
+    }
+
+    function parseInteger(value) {
+      const digits = digitsOnly(value);
+      return digits === "" ? 0 : Number(digits);
+    }
+
+    function parseDecimal(value) {
+      const cleaned = decimalOnly(value);
+      if (cleaned === "" || cleaned === ".") return 0;
+      return Number(cleaned);
+    }
+
+    function formatInteger(value) {
+      return new Intl.NumberFormat("ko-KR").format(Math.max(0, Math.floor(Number(value) || 0)));
+    }
+
+    function formatMoney(value) {
+      return formatInteger(value) + "원";
+    }
+
+    function formatYears(value) {
+      const n = Number(value) || 0;
+      if (Number.isInteger(n)) return String(n);
+      return String(Math.round(n * 10) / 10);
     }
 
     function scoreYears(years) {
@@ -744,6 +757,16 @@
       return Math.min(100, (reviews / 1000) * 100);
     }
 
+    function scoreDiversity(values) {
+      return Math.min(
+        100,
+        values.countries * 8
+        + values.categories * 7
+        + values.distilleries * 2
+        + values.caskTypes * 5
+      );
+    }
+
     function getRank(score) {
       if (score <= 20) return "입문";
       if (score <= 35) return "위정자";
@@ -753,39 +776,43 @@
       return "썩은물";
     }
 
-    function syncPair(key, source) {
-      const [range, number] = fields[key];
-      const max = Number(range.max);
-      const min = Number(range.min);
-      const step = Number(range.step) || 1;
-      const value = clamp(source.value, min, max);
-
-      range.value = value;
-      number.value = step < 1 ? value.toFixed(1) : Math.round(value);
-      update();
-    }
-
     function getValues() {
       return {
-        years: clamp($("yearsNumber").value, 0, 20),
-        spending: Math.max(0, Number($("spendingNumber").value) || 0),
-        reviews: clamp($("reviewsNumber").value, 0, 1000),
-        diversity: clamp($("diversityNumber").value, 0, 100),
+        years: clamp(parseDecimal($("years").value), 0, 20),
+        spending: parseInteger($("spending").value),
+        reviews: clamp(parseInteger($("reviews").value), 0, 1000),
+        countries: parseInteger($("countries").value),
+        categories: parseInteger($("categories").value),
+        distilleries: parseInteger($("distilleries").value),
+        caskTypes: parseInteger($("caskTypes").value),
       };
     }
 
-    function updateBreakdown(key, rawScore, weighted) {
-      const labelMap = {
-        years: "years",
-        spending: "spending",
-        reviews: "reviews",
-        diversity: "diversity",
-      };
+    function calculateScore(values) {
+      const yearsScore = scoreYears(values.years);
+      const spendingScore = scoreSpending(values.spending);
+      const reviewsScore = scoreReviews(values.reviews);
+      const diversityScore = scoreDiversity(values);
 
-      $(`${labelMap[key]}Break`).textContent =
-        `${formatNumber(rawScore)} × ${WEIGHTS[key].toFixed(2)} = ${formatNumber(weighted)}`;
+      return (
+        yearsScore * 0.10
+        + spendingScore * 0.45
+        + reviewsScore * 0.25
+        + diversityScore * 0.20
+      );
+    }
 
-      $(`${labelMap[key]}Fill`).style.width = `${Math.min(100, rawScore)}%`;
+    function formatInput(id) {
+      const input = $(id);
+
+      if (id === "years") {
+        const cleaned = decimalOnly(input.value);
+        input.value = cleaned === "" ? "0" : cleaned;
+        return;
+      }
+
+      const value = parseInteger(input.value);
+      input.value = formatInteger(value);
     }
 
     function updateRankRows(rank) {
@@ -796,40 +823,23 @@
 
     function update() {
       const values = getValues();
-
-      const scores = {
-        years: scoreYears(values.years),
-        spending: scoreSpending(values.spending),
-        reviews: scoreReviews(values.reviews),
-        diversity: values.diversity,
-      };
-
-      const weighted = {
-        years: scores.years * WEIGHTS.years,
-        spending: scores.spending * WEIGHTS.spending,
-        reviews: scores.reviews * WEIGHTS.reviews,
-        diversity: scores.diversity * WEIGHTS.diversity,
-      };
-
-      const total = Object.values(weighted).reduce((sum, v) => sum + v, 0);
+      const total = calculateScore(values);
       const rank = getRank(total);
 
-      $("yearsScoreText").textContent = `${formatNumber(scores.years)}점`;
-      $("spendingScoreText").textContent = `${formatNumber(scores.spending)}점`;
-      $("reviewsScoreText").textContent = `${formatNumber(scores.reviews)}점`;
-      $("diversityScoreText").textContent = `${formatNumber(scores.diversity)}점`;
-
-      updateBreakdown("years", scores.years, weighted.years);
-      updateBreakdown("spending", scores.spending, weighted.spending);
-      updateBreakdown("reviews", scores.reviews, weighted.reviews);
-      updateBreakdown("diversity", scores.diversity, weighted.diversity);
-
-      $("scoreValue").textContent = formatNumber(total);
+      $("scoreValue").textContent = total.toFixed(1);
       $("rankBadge").textContent = rank;
       $("scoreMeter").style.width = `${Math.min(100, total)}%`;
 
       $("scoreSentence").textContent =
-        `현재 입력값 기준 등급은 ${rank}입니다. 소비 ${formatMoney(values.spending)}, 경력 ${formatNumber(values.years)}년, 리뷰 ${Math.round(values.reviews)}병 기준입니다.`;
+        `현재 입력값 기준 등급은 ${rank}입니다.`;
+
+      $("summaryYears").textContent = `${formatYears(values.years)}년`;
+      $("summarySpending").textContent = formatMoney(values.spending);
+      $("summaryReviews").textContent = `${formatInteger(values.reviews)}병`;
+      $("summaryCountryCategory").textContent =
+        `${formatInteger(values.countries)}개 / ${formatInteger(values.categories)}개`;
+      $("summaryDistilleryCask").textContent =
+        `${formatInteger(values.distilleries)}개 / ${formatInteger(values.caskTypes)}개`;
 
       updateRankRows(rank);
     }
@@ -850,10 +860,13 @@
         "위스키 고인물 지수 계산 결과",
         `- 고인물 지수: ${total}점`,
         `- 등급: ${rank}`,
-        `- 시간: ${formatNumber(values.years)}년`,
+        `- 위스키 경력: ${formatYears(values.years)}년`,
         `- 누적 소비액: ${formatMoney(values.spending)}`,
-        `- 테이스팅 리뷰: ${Math.round(values.reviews)}병`,
-        `- 다양성 지수: ${Math.round(values.diversity)}점`,
+        `- 테이스팅 리뷰: ${formatInteger(values.reviews)}병`,
+        `- 마셔본 국가 수: ${formatInteger(values.countries)}개`,
+        `- 마셔본 카테고리 수: ${formatInteger(values.categories)}개`,
+        `- 마셔본 증류소·브랜드 수: ${formatInteger(values.distilleries)}개`,
+        `- 마셔본 캐스크 타입 수: ${formatInteger(values.caskTypes)}개`,
       ].join("\n");
 
       navigator.clipboard.writeText(text)
@@ -862,23 +875,35 @@
     }
 
     function resetValues() {
-      for (const key of Object.keys(DEFAULTS)) {
-        const [range, number] = fields[key];
-        range.value = DEFAULTS[key];
-        number.value = DEFAULTS[key];
+      for (const id of inputIds) {
+        $(id).value = "0";
       }
       update();
     }
 
-    for (const [key, [range, number]] of Object.entries(fields)) {
-      range.addEventListener("input", () => syncPair(key, range));
-      number.addEventListener("input", () => syncPair(key, number));
+    for (const id of inputIds) {
+      const input = $(id);
+
+      input.addEventListener("focus", () => {
+        if (input.value === "0") input.value = "";
+      });
+
+      input.addEventListener("input", () => {
+        formatInput(id);
+        update();
+      });
+
+      input.addEventListener("blur", () => {
+        if (input.value.trim() === "") input.value = "0";
+        formatInput(id);
+        update();
+      });
     }
 
     $("copyBtn").addEventListener("click", copyResult);
     $("resetBtn").addEventListener("click", resetValues);
 
-    update();
+    resetValues();
   </script>
 </body>
 </html>
