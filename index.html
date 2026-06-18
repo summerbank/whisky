@@ -230,21 +230,38 @@
       position: relative;
     }
 
-    .input-wrap input {
+    .input-wrap input,
+    .input-wrap select {
       width: 100%;
+      min-height: 56px;
       padding: 15px 52px 15px 14px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--line);
       background: rgba(2, 6, 23, 0.66);
       color: var(--text);
       outline: none;
-      font-size: 20px;
-      font-weight: 950;
+      font-size: 18px;
+      font-weight: 900;
       font-variant-numeric: tabular-nums;
       letter-spacing: -0.02em;
     }
 
-    .input-wrap input:focus {
+    .input-wrap select {
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #fbbf24 50%),
+        linear-gradient(135deg, #fbbf24 50%, transparent 50%);
+      background-position:
+        calc(100% - 23px) 50%,
+        calc(100% - 16px) 50%;
+      background-size: 7px 7px, 7px 7px;
+      background-repeat: no-repeat;
+    }
+
+    .input-wrap input:focus,
+    .input-wrap select:focus {
       border-color: rgba(245, 158, 11, 0.65);
       box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.12);
     }
@@ -515,8 +532,17 @@
             <span class="field-sub">만점 기준: 1,000병</span>
           </div>
           <div class="input-wrap">
-            <input id="reviews" type="text" inputmode="numeric" value="0" aria-label="테이스팅 리뷰 개수" autocomplete="off" />
-            <span class="unit">병</span>
+            <select id="reviews" aria-label="테이스팅 리뷰 개수">
+              <option value="0">0개</option>
+              <option value="8">1~10개</option>
+              <option value="25">11~30개</option>
+              <option value="45">31~50개</option>
+              <option value="88">51~100개</option>
+              <option value="250">101~300개</option>
+              <option value="600">301~700개</option>
+              <option value="926">701~1,000개</option>
+              <option value="1000">1,000개 이상</option>
+            </select>
           </div>
           <p class="field-example">예: 노트, 앱, 블로그, SNS 등에 기록한 리뷰 개수</p>
         </div>
@@ -531,10 +557,18 @@
             바틀, 바, 잔술, 바이알 등
           </p>
           <div class="input-wrap">
-            <input id="spending" type="text" inputmode="numeric" value="0" aria-label="누적 소비액 원화" autocomplete="off" />
-            <span class="unit">원</span>
+            <select id="spending" aria-label="누적 소비액 원화">
+              <option value="0">0원</option>
+              <option value="375000">1~50만 원</option>
+              <option value="1625000">50만~200만 원</option>
+              <option value="4250000">200만~500만 원</option>
+              <option value="8750000">500만~1,000만 원</option>
+              <option value="25000000">1,000만~3,000만 원</option>
+              <option value="45000000">3,000만~5,000만 원</option>
+              <option value="87500000">5,000만~1억 원</option>
+              <option value="100000000">1억 원 이상</option>
+            </select>
           </div>
-          <p class="field-example">예: 500,000 / 2,000,000 / 20,000,000</p>
         </div>
 
         <div class="field">
@@ -542,8 +576,14 @@
             <label for="countries">마셔본 국가 수</label>
           </div>
           <div class="input-wrap">
-            <input id="countries" type="text" inputmode="numeric" value="0" aria-label="마셔본 국가 수" autocomplete="off" />
-            <span class="unit">개</span>
+            <select id="countries" aria-label="마셔본 국가 수">
+              <option value="0">0개</option>
+              <option value="2.5">1~3개</option>
+              <option value="5.5">4~6개</option>
+              <option value="9.25">7~10개</option>
+              <option value="13.25">11~14개</option>
+              <option value="15">15개 이상</option>
+            </select>
           </div>
           <p class="field-example">예: 스코틀랜드, 미국, 일본, 아일랜드, 대만, 인도</p>
         </div>
@@ -553,19 +593,31 @@
             <label for="distilleries">마셔본 증류소·브랜드 수</label>
           </div>
           <div class="input-wrap">
-            <input id="distilleries" type="text" inputmode="numeric" value="0" aria-label="마셔본 증류소 또는 브랜드 수" autocomplete="off" />
-            <span class="unit">개</span>
+            <select id="distilleries" aria-label="마셔본 증류소 또는 브랜드 수">
+              <option value="0">0개</option>
+              <option value="15">1~20개</option>
+              <option value="43">21~50개</option>
+              <option value="88">51~100개</option>
+              <option value="137">101~149개</option>
+              <option value="150">150개 이상</option>
+            </select>
           </div>
           <p class="field-example">예: 맥캘란, 라프로익, 아드벡, 글렌드로낙, 와일드터키</p>
         </div>
 
-        <div class="field">
+        <div class="field wide">
           <div class="field-head">
             <label for="caskTypes">마셔본 캐스크 타입 수</label>
           </div>
           <div class="input-wrap">
-            <input id="caskTypes" type="text" inputmode="numeric" value="0" aria-label="마셔본 캐스크 타입 수" autocomplete="off" />
-            <span class="unit">개</span>
+            <select id="caskTypes" aria-label="마셔본 캐스크 타입 수">
+              <option value="0">0개</option>
+              <option value="2.5">1~3개</option>
+              <option value="6.25">4~7개</option>
+              <option value="11">8~12개</option>
+              <option value="17.5">13~19개</option>
+              <option value="20">20개 이상</option>
+            </select>
           </div>
           <p class="field-example">예: (피니쉬, 블렌딩, 매링 관계없이) 버번, 올로로소, PX, 럼, 와인, 포트, 소테른 등</p>
         </div>
@@ -612,26 +664,20 @@
   <div class="toast" id="toast">복사했습니다.</div>
 
   <script>
-    const DEFAULTS = {
-      years: 0,
-      spending: 0,
-      reviews: 0,
-      countries: 0,
-      distilleries: 0,
-      caskTypes: 0,
-    };
-
     const $ = (id) => document.getElementById(id);
-    const inputIds = Object.keys(DEFAULTS);
+
+    const selectIds = [
+      "spending",
+      "reviews",
+      "countries",
+      "distilleries",
+      "caskTypes",
+    ];
 
     function clamp(value, min, max) {
       const n = Number(value);
       if (Number.isNaN(n)) return min;
       return Math.min(max, Math.max(min, n));
-    }
-
-    function digitsOnly(value) {
-      return String(value).replace(/[^\d]/g, "");
     }
 
     function decimalOnly(value) {
@@ -643,29 +689,10 @@
       return cleaned;
     }
 
-    function parseInteger(value) {
-      const digits = digitsOnly(value);
-      return digits === "" ? 0 : Number(digits);
-    }
-
     function parseDecimal(value) {
       const cleaned = decimalOnly(value);
       if (cleaned === "" || cleaned === ".") return 0;
       return Number(cleaned);
-    }
-
-    function formatInteger(value) {
-      return new Intl.NumberFormat("ko-KR").format(Math.max(0, Math.floor(Number(value) || 0)));
-    }
-
-    function formatMoney(value) {
-      return formatInteger(value) + "원";
-    }
-
-    function formatYears(value) {
-      const n = Number(value) || 0;
-      if (Number.isInteger(n)) return String(n);
-      return String(Math.round(n * 10) / 10);
     }
 
     function scoreYears(years) {
@@ -674,20 +701,24 @@
 
     function scoreSpending(spending) {
       if (spending <= 0) return 0;
-      return Math.min(100, Math.max(0, Math.log10(spending) * 25 - 100));
+      return Math.min(100, spending / 1000000);
+    }
+
+    function saturatedScore(value, maxValue, speed, maxScore) {
+      if (value <= 0) return 0;
+      if (value >= maxValue) return maxScore;
+      return maxScore * (1 - Math.exp(-value / speed)) / (1 - Math.exp(-maxValue / speed));
     }
 
     function scoreReviews(reviews) {
-      return Math.min(100, (reviews / 1000) * 100);
+      return saturatedScore(reviews, 1000, 200, 100);
     }
 
     function scoreDiversity(values) {
-      return Math.min(
-        100,
-        Math.min(33.33, values.countries / 9 * 33.33)
-        + Math.min(46.67, values.distilleries / 100 * 46.67)
-        + Math.min(20, values.caskTypes / 15 * 20)
-      );
+      const countryScore = saturatedScore(values.countries, 15, 5, 33.33);
+      const distilleryScore = saturatedScore(values.distilleries, 150, 35, 46.67);
+      const caskScore = Math.min(20, values.caskTypes);
+      return Math.min(100, countryScore + distilleryScore + caskScore);
     }
 
     function getRank(score) {
@@ -701,11 +732,11 @@
     function getValues() {
       return {
         years: clamp(parseDecimal($("years").value), 0, 20),
-        spending: parseInteger($("spending").value),
-        reviews: clamp(parseInteger($("reviews").value), 0, 1000),
-        countries: parseInteger($("countries").value),
-        distilleries: parseInteger($("distilleries").value),
-        caskTypes: parseInteger($("caskTypes").value),
+        spending: Number($("spending").value) || 0,
+        reviews: Number($("reviews").value) || 0,
+        countries: Number($("countries").value) || 0,
+        distilleries: Number($("distilleries").value) || 0,
+        caskTypes: Number($("caskTypes").value) || 0,
       };
     }
 
@@ -717,23 +748,10 @@
 
       return (
         yearsScore * 0.10
-        + spendingScore * 0.40
-        + reviewsScore * 0.25
+        + spendingScore * 0.35
+        + reviewsScore * 0.30
         + diversityScore * 0.25
       );
-    }
-
-    function formatInput(id) {
-      const input = $(id);
-
-      if (id === "years") {
-        const cleaned = decimalOnly(input.value);
-        input.value = cleaned === "" ? "0" : cleaned;
-        return;
-      }
-
-      const value = parseInteger(input.value);
-      input.value = formatInteger(value);
     }
 
     function updateRankRows(rank) {
@@ -751,9 +769,7 @@
       $("scoreValue").textContent = roundedTotal;
       $("rankBadge").textContent = rank;
       $("scoreMeter").style.width = `${Math.min(100, roundedTotal)}%`;
-
-      $("resultText").textContent =
-        `현재 입력값 기준 등급은 ${rank}입니다.`;
+      $("resultText").textContent = `현재 입력값 기준 등급은 ${rank}입니다.`;
 
       updateRankRows(rank);
     }
@@ -766,10 +782,8 @@
     }
 
     function copyResult() {
-      const values = getValues();
       const total = $("scoreValue").textContent;
       const rank = $("rankBadge").textContent;
-
       const text = [
         `고인물 지수: ${total}점`,
         `등급: ${rank}`,
@@ -781,29 +795,36 @@
     }
 
     function resetValues() {
-      for (const id of inputIds) {
-        $(id).value = "0";
+      $("years").value = "0";
+      for (const id of selectIds) {
+        $(id).selectedIndex = 0;
       }
       update();
     }
 
-    for (const id of inputIds) {
-      const input = $(id);
+    function formatYearInput() {
+      const input = $("years");
+      const cleaned = decimalOnly(input.value);
+      input.value = cleaned === "" ? "0" : cleaned;
+    }
 
-      input.addEventListener("focus", () => {
-        if (input.value === "0") input.value = "";
-      });
+    $("years").addEventListener("focus", () => {
+      if ($("years").value === "0") $("years").value = "";
+    });
 
-      input.addEventListener("input", () => {
-        formatInput(id);
-        update();
-      });
+    $("years").addEventListener("input", () => {
+      formatYearInput();
+      update();
+    });
 
-      input.addEventListener("blur", () => {
-        if (input.value.trim() === "") input.value = "0";
-        formatInput(id);
-        update();
-      });
+    $("years").addEventListener("blur", () => {
+      if ($("years").value.trim() === "") $("years").value = "0";
+      formatYearInput();
+      update();
+    });
+
+    for (const id of selectIds) {
+      $(id).addEventListener("change", update);
     }
 
     $("copyBtn").addEventListener("click", copyResult);
