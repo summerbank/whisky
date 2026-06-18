@@ -550,17 +550,6 @@
 
         <div class="field">
           <div class="field-head">
-            <label for="categories">마셔본 카테고리 수</label>
-          </div>
-          <div class="input-wrap">
-            <input id="categories" type="text" inputmode="numeric" value="0" aria-label="마셔본 카테고리 수" autocomplete="off" />
-            <span class="unit">개</span>
-          </div>
-          <p class="field-example">예: 싱글몰트, 블렌디드, 버번, 라이, 아이리시, 재패니즈</p>
-        </div>
-
-        <div class="field">
-          <div class="field-head">
             <label for="distilleries">마셔본 증류소·브랜드 수</label>
           </div>
           <div class="input-wrap">
@@ -578,7 +567,7 @@
             <input id="caskTypes" type="text" inputmode="numeric" value="0" aria-label="마셔본 캐스크 타입 수" autocomplete="off" />
             <span class="unit">개</span>
           </div>
-          <p class="field-example">예: 버번, 셰리, 포트, 와인, 럼, 미즈나라</p>
+          <p class="field-example">예: (피니쉬, 블렌딩, 매링 관계없이) 버번, 올로로소, PX, 럼, 와인, 포트, 소테른 등</p>
         </div>
       </div>
     </section>
@@ -588,7 +577,7 @@
         <h2 id="resultTitle">결과</h2>
         <div class="score-label">현재 고인물 지수</div>
         <div class="score-line">
-          <div class="score-value" id="scoreValue">0.0</div>
+          <div class="score-value" id="scoreValue">0</div>
           <div class="score-unit">점</div>
           <div class="rank-badge" id="rankBadge">입문</div>
         </div>
@@ -611,11 +600,11 @@
       </div>
 
       <div class="rank-table" aria-label="등급표">
-        <div class="rank-row" data-rank="입문"><span class="rank-range">0~20</span><span>입문</span></div>
-        <div class="rank-row" data-rank="위린이"><span class="rank-range">21~35</span><span>위린이</span></div>
-        <div class="rank-row" data-rank="위알못"><span class="rank-range">36~65</span><span>위알못</span></div>
-        <div class="rank-row" data-rank="고인물"><span class="rank-range">66~90</span><span>고인물</span></div>
-        <div class="rank-row" data-rank="썩은물"><span class="rank-range">91~100</span><span>썩은물</span></div>
+        <div class="rank-row" data-rank="입문"><span class="rank-range">0~14</span><span>입문</span></div>
+        <div class="rank-row" data-rank="위린이"><span class="rank-range">15~34</span><span>위린이</span></div>
+        <div class="rank-row" data-rank="위알못"><span class="rank-range">35~49</span><span>위알못</span></div>
+        <div class="rank-row" data-rank="고인물"><span class="rank-range">50~79</span><span>고인물</span></div>
+        <div class="rank-row" data-rank="썩은물"><span class="rank-range">80~100</span><span>썩은물</span></div>
       </div>
     </section>
   </main>
@@ -628,7 +617,6 @@
       spending: 0,
       reviews: 0,
       countries: 0,
-      categories: 0,
       distilleries: 0,
       caskTypes: 0,
     };
@@ -696,18 +684,17 @@
     function scoreDiversity(values) {
       return Math.min(
         100,
-        values.countries * 8
-        + values.categories * 7
-        + values.distilleries * 2
-        + values.caskTypes * 5
+        Math.min(33.33, values.countries / 9 * 33.33)
+        + Math.min(46.67, values.distilleries / 100 * 46.67)
+        + Math.min(20, values.caskTypes / 15 * 20)
       );
     }
 
     function getRank(score) {
-      if (score <= 20) return "입문";
-      if (score <= 35) return "위린이";
-      if (score <= 65) return "위알못";
-      if (score <= 90) return "고인물";
+      if (score <= 14) return "입문";
+      if (score <= 34) return "위린이";
+      if (score <= 49) return "위알못";
+      if (score <= 79) return "고인물";
       return "썩은물";
     }
 
@@ -717,7 +704,6 @@
         spending: parseInteger($("spending").value),
         reviews: clamp(parseInteger($("reviews").value), 0, 1000),
         countries: parseInteger($("countries").value),
-        categories: parseInteger($("categories").value),
         distilleries: parseInteger($("distilleries").value),
         caskTypes: parseInteger($("caskTypes").value),
       };
@@ -759,11 +745,12 @@
     function update() {
       const values = getValues();
       const total = calculateScore(values);
-      const rank = getRank(total);
+      const roundedTotal = Math.round(total);
+      const rank = getRank(roundedTotal);
 
-      $("scoreValue").textContent = total.toFixed(1);
+      $("scoreValue").textContent = roundedTotal;
       $("rankBadge").textContent = rank;
-      $("scoreMeter").style.width = `${Math.min(100, total)}%`;
+      $("scoreMeter").style.width = `${Math.min(100, roundedTotal)}%`;
 
       $("resultText").textContent =
         `현재 입력값 기준 등급은 ${rank}입니다.`;
