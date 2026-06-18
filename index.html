@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>위스키 고인물 지수 계산기</title>
+  <meta name="description" content="시간, 소비, 테이스팅 리뷰, 다양성 기준으로 위스키 고인물 지수를 계산하는 웹 계산기" />
+  <meta name="theme-color" content="#0b0f19" />
+
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --bg-soft: #111827;
+      --card: rgba(17, 24, 39, 0.72);
+      --card-strong: rgba(24, 32, 48, 0.94);
+      --line: rgba(255, 255, 255, 0.10);
+      --line-strong: rgba(255, 255, 255, 0.18);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --muted-2: #64748b;
+      --accent: #f59e0b;
+      --accent-2: #fbbf24;
+      --danger: #fb7185;
+      --good: #34d399;
+      --shadow: 0 24px 90px rgba(0, 0, 0, 0.45);
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family:
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Apple SD Gothic Neo",
+        "Noto Sans KR",
+        "Malgun Gothic",
+        sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 10%, rgba(245, 158, 11, 0.22), transparent 28rem),
+        radial-gradient(circle at 82% 20%, rgba(251, 191, 36, 0.12), transparent 28rem),
+        radial-gradient(circle at 50% 110%, rgba(52, 211, 153, 0.10), transparent 32rem),
+        linear-gradient(135deg, #070a12 0%, #0b0f19 42%, #111827 100%);
+      overflow-x: hidden;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 56px 0 40px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-bottom: 24px;
+    }
+
+    .hero-card,
+    .score-card,
+    .panel {
+      border: 1px solid var(--line);
+      background: var(--card);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      padding: 34px;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background:
+        linear-gradient(120deg, rgba(245, 158, 11, 0.32), transparent 35%),
+        radial-gradient(circle at 85% 10%, rgba(251, 191, 36, 0.20), transparent 22rem);
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid rgba(245, 158, 11, 0.28);
+      border-radius: 999px;
+      color: #fde68a;
+      background: rgba(245, 158, 11, 0.10);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .eyebrow-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.9);
+    }
+
+    h1 {
+      margin: 24px 0 14px;
+      font-size: clamp(36px, 6vw, 72px);
+      line-height: 0.95;
+      letter-spacing: -0.065em;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.75;
+      word-break: keep-all;
+    }
+
+    .formula {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 26px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.055);
+      color: #dbeafe;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .chip strong {
+      color: #fde68a;
+      font-weight: 800;
+    }
+
+    .score-card {
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      display: grid;
+      align-content: space-between;
+      min-height: 360px;
+      background:
+        linear-gradient(180deg, rgba(24, 32, 48, 0.92), rgba(17, 24, 39, 0.72)),
+        radial-gradient(circle at top right, rgba(245, 158, 11, 0.20), transparent 18rem);
+    }
+
+    .score-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .score-label {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .score-value {
+      margin-top: 8px;
+      font-size: clamp(60px, 10vw, 116px);
+      line-height: 0.88;
+      letter-spacing: -0.08em;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .score-value span {
+      font-size: 0.28em;
+      letter-spacing: -0.03em;
+      color: var(--muted);
+      margin-left: 4px;
+    }
+
+    .rank-badge {
+      flex: 0 0 auto;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(245, 158, 11, 0.36);
+      background: rgba(245, 158, 11, 0.12);
+      color: #fde68a;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .meter {
+      width: 100%;
+      height: 14px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #64748b, #f59e0b, #fbbf24);
+      transition: width 240ms ease;
+      box-shadow: 0 0 22px rgba(245, 158, 11, 0.45);
+    }
+
+    .score-detail {
+      margin-top: 18px;
+      display: grid;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 0.86fr;
+      gap: 24px;
+    }
+
+    .panel {
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-end;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.04em;
+    }
+
+    .panel-title small {
+      color: var(--muted-2);
+      font-weight: 700;
+    }
+
+    .inputs {
+      display: grid;
+      gap: 16px;
+    }
+
+    .field {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .field-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    label {
+      font-weight: 850;
+      letter-spacing: -0.025em;
+    }
+
+    .field-score {
+      color: #fde68a;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .control-row {
+      display: grid;
+      grid-template-columns: 1fr 150px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: rgba(2, 6, 23, 0.66);
+      color: var(--text);
+      outline: none;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="number"]:focus {
+      border-color: rgba(245, 158, 11, 0.62);
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.12);
+    }
+
+    .hint {
+      margin-top: 10px;
+      color: var(--muted-2);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .breakdown {
+      display: grid;
+      gap: 12px;
+    }
+
+    .break-row {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .break-row-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .break-name {
+      color: #e2e8f0;
+      font-weight: 850;
+    }
+
+    .break-num {
+      color: var(--muted);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .mini-meter {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .mini-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.65), rgba(251, 191, 36, 0.95));
+      transition: width 240ms ease;
+    }
+
+    .rank-table {
+      margin-top: 20px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+    }
+
+    .rank-row {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .rank-row:last-child {
+      border-bottom: 0;
+    }
+
+    .rank-row.active {
+      color: var(--text);
+      background: rgba(245, 158, 11, 0.13);
+    }
+
+    .rank-range {
+      font-variant-numeric: tabular-nums;
+      color: #fde68a;
+    }
+
+    .footer {
+      margin-top: 20px;
+      color: var(--muted-2);
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      border: 1px solid var(--line-strong);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 999px;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-weight: 850;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.10);
+      border-color: rgba(245, 158, 11, 0.45);
+    }
+
+    .btn.primary {
+      color: #1f1300;
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      border-color: transparent;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.92);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      transition: 200ms ease;
+      font-weight: 800;
+      z-index: 20;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .score-card {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .shell {
+        width: min(100% - 22px, 1180px);
+        padding: 24px 0 26px;
+      }
+
+      .hero-card,
+      .score-card,
+      .panel {
+        padding: 20px;
+        border-radius: 22px;
+      }
+
+      .control-row {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .rank-row {
+        grid-template-columns: 82px 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="hero-content">
+          <div class="eyebrow"><span class="eyebrow-dot"></span> Whisky Nerd Index</div>
+          <h1>위스키<br />고인물 지수 계산기</h1>
+          <p>
+            시간, 소비, 테이스팅 리뷰, 다양성을 기준으로 위스키 취미의 깊이를 계산합니다.
+            입력값을 바꾸면 점수와 등급이 바로 갱신됩니다.
+          </p>
+
+          <div class="formula" aria-label="계산식">
+            <span class="chip">시간 <strong>10%</strong></span>
+            <span class="chip">소비 <strong>45%</strong></span>
+            <span class="chip">리뷰 <strong>25%</strong></span>
+            <span class="chip">다양성 <strong>20%</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="score-card" aria-label="계산 결과">
+        <div>
+          <div class="score-top">
+            <div>
+              <div class="score-label">현재 고인물 지수</div>
+              <div class="score-value"><span id="scoreValue">0.0</span><span>점</span></div>
+            </div>
+            <div class="rank-badge" id="rankBadge">입문</div>
+          </div>
+
+          <div class="meter" aria-hidden="true">
+            <div class="meter-fill" id="scoreMeter"></div>
+          </div>
+
+          <div class="score-detail">
+            <div id="scoreSentence">입력값을 조정하면 결과가 바로 계산됩니다.</div>
+            <div id="formulaSentence">공식: 시간×0.10 + 소비×0.45 + 리뷰×0.25 + 다양성×0.20</div>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="btn primary" id="copyBtn" type="button">결과 복사</button>
+          <button class="btn" id="resetBtn" type="button">기본값 복원</button>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <section class="panel">
+        <div class="panel-title">
+          <h2>입력값</h2>
+          <small>0~100점으로 정규화 후 가중합</small>
+        </div>
+
+        <div class="inputs">
+          <div class="field">
+            <div class="field-head">
+              <label for="years">시간</label>
+              <span class="field-score" id="yearsScoreText">15.0점</span>
+            </div>
+            <div class="control-row">
+              <input id="years" type="range" min="0" max="20" step="0.1" value="3" />
+              <input id="yearsNumber" type="number" min="0" max="20" step="0.1" value="3" aria-label="위스키 경력 연수" />
+            </div>
+            <div class="hint">시간 지수 = min(100, 경력 연수 / 20 × 100)</div>
+          </div>
+
+          <div class="field">
+            <div class="field-head">
+              <label for="spending">누적 소비액</label>
+              <span class="field-score" id="spendingScoreText">82.5점</span>
+            </div>
+            <div class="control-row">
+              <input id="spending" type="range" min="0" max="100000000" step="100000" value="20000000" />
+              <input id="spendingNumber" type="number" min="0" step="100000" value="20000000" aria-label="누적 소비액 원화" />
+            </div>
+            <div class="hint">소비 지수 = min(100, max(0, log10(누적 소비액 원화) × 25 - 100))</div>
+          </div>
+
+          <div class="field">
+            <div class="field-head">
+              <label for="reviews">테이스팅 리뷰</label>
+              <span class="field-score" id="reviewsScoreText">10.0점</span>
+            </div>
+            <div class="control-row">
+              <input id="reviews" type="range" min="0" max="1000" step="1" value="100" />
+              <input id="reviewsNumber" type="number" min="0" max="1000" step="1" value="100" aria-label="테이스팅 리뷰 병 수" />
+            </div>
+            <div class="hint">리뷰 지수 = min(100, 리뷰 작성 병 수 / 1000 × 100)</div>
+          </div>
+
+          <div class="field">
+            <div class="field-head">
+              <label for="diversity">다양성 지수</label>
+              <span class="field-score" id="diversityScoreText">100.0점</span>
+            </div>
+            <div class="control-row">
+              <input id="diversity" type="range" min="0" max="100" step="1" value="100" />
+              <input id="diversityNumber" type="number" min="0" max="100" step="1" value="100" aria-label="다양성 지수" />
+            </div>
+            <div class="hint">다양성 지수 = 0~100점 직접 입력</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <div class="panel-title">
+          <h2>점수 분해</h2>
+          <small>가중치 반영값</small>
+        </div>
+
+        <div class="breakdown">
+          <div class="break-row">
+            <div class="break-row-top">
+              <span class="break-name">시간 지수</span>
+              <span class="break-num" id="yearsBreak">15.0 × 0.10 = 1.5</span>
+            </div>
+            <div class="mini-meter"><div class="mini-fill" id="yearsFill"></div></div>
+          </div>
+
+          <div class="break-row">
+            <div class="break-row-top">
+              <span class="break-name">소비 지수</span>
+              <span class="break-num" id="spendingBreak">82.5 × 0.45 = 37.1</span>
+            </div>
+            <div class="mini-meter"><div class="mini-fill" id="spendingFill"></div></div>
+          </div>
+
+          <div class="break-row">
+            <div class="break-row-top">
+              <span class="break-name">테이스팅 리뷰 지수</span>
+              <span class="break-num" id="reviewsBreak">10.0 × 0.25 = 2.5</span>
+            </div>
+            <div class="mini-meter"><div class="mini-fill" id="reviewsFill"></div></div>
+          </div>
+
+          <div class="break-row">
+            <div class="break-row-top">
+              <span class="break-name">다양성 지수</span>
+              <span class="break-num" id="diversityBreak">100.0 × 0.20 = 20.0</span>
+            </div>
+            <div class="mini-meter"><div class="mini-fill" id="diversityFill"></div></div>
+          </div>
+        </div>
+
+        <div class="rank-table" aria-label="등급표">
+          <div class="rank-row" data-rank="입문"><span class="rank-range">0~20</span><span>입문</span></div>
+          <div class="rank-row" data-rank="위정자"><span class="rank-range">21~35</span><span>위정자</span></div>
+          <div class="rank-row" data-rank="위린이"><span class="rank-range">36~55</span><span>위린이</span></div>
+          <div class="rank-row" data-rank="위초딩"><span class="rank-range">56~75</span><span>위초딩</span></div>
+          <div class="rank-row" data-rank="고인물"><span class="rank-range">76~90</span><span>고인물</span></div>
+          <div class="rank-row" data-rank="썩은물"><span class="rank-range">91~100</span><span>썩은물</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <footer class="footer">
+      GitHub Pages용 정적 페이지입니다. <code>index.html</code> 하나만 올리면 작동합니다.
+    </footer>
+  </main>
+
+  <div class="toast" id="toast">복사했습니다.</div>
+
+  <script>
+    const WEIGHTS = {
+      years: 0.10,
+      spending: 0.45,
+      reviews: 0.25,
+      diversity: 0.20,
+    };
+
+    const DEFAULTS = {
+      years: 3,
+      spending: 20000000,
+      reviews: 100,
+      diversity: 100,
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    const fields = {
+      years: [$("years"), $("yearsNumber")],
+      spending: [$("spending"), $("spendingNumber")],
+      reviews: [$("reviews"), $("reviewsNumber")],
+      diversity: [$("diversity"), $("diversityNumber")],
+    };
+
+    function clamp(value, min, max) {
+      const n = Number(value);
+      if (Number.isNaN(n)) return min;
+      return Math.min(max, Math.max(min, n));
+    }
+
+    function formatMoney(value) {
+      return new Intl.NumberFormat("ko-KR").format(Math.round(value)) + "원";
+    }
+
+    function formatNumber(value, digit = 1) {
+      return Number(value).toFixed(digit);
+    }
+
+    function scoreYears(years) {
+      return Math.min(100, (years / 20) * 100);
+    }
+
+    function scoreSpending(spending) {
+      if (spending <= 0) return 0;
+      return Math.min(100, Math.max(0, Math.log10(spending) * 25 - 100));
+    }
+
+    function scoreReviews(reviews) {
+      return Math.min(100, (reviews / 1000) * 100);
+    }
+
+    function getRank(score) {
+      if (score <= 20) return "입문";
+      if (score <= 35) return "위정자";
+      if (score <= 55) return "위린이";
+      if (score <= 75) return "위초딩";
+      if (score <= 90) return "고인물";
+      return "썩은물";
+    }
+
+    function syncPair(key, source) {
+      const [range, number] = fields[key];
+      const max = Number(range.max);
+      const min = Number(range.min);
+      const step = Number(range.step) || 1;
+      const value = clamp(source.value, min, max);
+
+      range.value = value;
+      number.value = step < 1 ? value.toFixed(1) : Math.round(value);
+      update();
+    }
+
+    function getValues() {
+      return {
+        years: clamp($("yearsNumber").value, 0, 20),
+        spending: Math.max(0, Number($("spendingNumber").value) || 0),
+        reviews: clamp($("reviewsNumber").value, 0, 1000),
+        diversity: clamp($("diversityNumber").value, 0, 100),
+      };
+    }
+
+    function updateBreakdown(key, rawScore, weighted) {
+      const labelMap = {
+        years: "years",
+        spending: "spending",
+        reviews: "reviews",
+        diversity: "diversity",
+      };
+
+      $(`${labelMap[key]}Break`).textContent =
+        `${formatNumber(rawScore)} × ${WEIGHTS[key].toFixed(2)} = ${formatNumber(weighted)}`;
+
+      $(`${labelMap[key]}Fill`).style.width = `${Math.min(100, rawScore)}%`;
+    }
+
+    function updateRankRows(rank) {
+      document.querySelectorAll(".rank-row").forEach((row) => {
+        row.classList.toggle("active", row.dataset.rank === rank);
+      });
+    }
+
+    function update() {
+      const values = getValues();
+
+      const scores = {
+        years: scoreYears(values.years),
+        spending: scoreSpending(values.spending),
+        reviews: scoreReviews(values.reviews),
+        diversity: values.diversity,
+      };
+
+      const weighted = {
+        years: scores.years * WEIGHTS.years,
+        spending: scores.spending * WEIGHTS.spending,
+        reviews: scores.reviews * WEIGHTS.reviews,
+        diversity: scores.diversity * WEIGHTS.diversity,
+      };
+
+      const total = Object.values(weighted).reduce((sum, v) => sum + v, 0);
+      const rank = getRank(total);
+
+      $("yearsScoreText").textContent = `${formatNumber(scores.years)}점`;
+      $("spendingScoreText").textContent = `${formatNumber(scores.spending)}점`;
+      $("reviewsScoreText").textContent = `${formatNumber(scores.reviews)}점`;
+      $("diversityScoreText").textContent = `${formatNumber(scores.diversity)}점`;
+
+      updateBreakdown("years", scores.years, weighted.years);
+      updateBreakdown("spending", scores.spending, weighted.spending);
+      updateBreakdown("reviews", scores.reviews, weighted.reviews);
+      updateBreakdown("diversity", scores.diversity, weighted.diversity);
+
+      $("scoreValue").textContent = formatNumber(total);
+      $("rankBadge").textContent = rank;
+      $("scoreMeter").style.width = `${Math.min(100, total)}%`;
+
+      $("scoreSentence").textContent =
+        `현재 입력값 기준 등급은 ${rank}입니다. 소비 ${formatMoney(values.spending)}, 경력 ${formatNumber(values.years)}년, 리뷰 ${Math.round(values.reviews)}병 기준입니다.`;
+
+      updateRankRows(rank);
+    }
+
+    function showToast(message) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 1400);
+    }
+
+    function copyResult() {
+      const values = getValues();
+      const total = $("scoreValue").textContent;
+      const rank = $("rankBadge").textContent;
+
+      const text = [
+        "위스키 고인물 지수 계산 결과",
+        `- 고인물 지수: ${total}점`,
+        `- 등급: ${rank}`,
+        `- 시간: ${formatNumber(values.years)}년`,
+        `- 누적 소비액: ${formatMoney(values.spending)}`,
+        `- 테이스팅 리뷰: ${Math.round(values.reviews)}병`,
+        `- 다양성 지수: ${Math.round(values.diversity)}점`,
+      ].join("\n");
+
+      navigator.clipboard.writeText(text)
+        .then(() => showToast("결과를 복사했습니다."))
+        .catch(() => showToast("복사에 실패했습니다."));
+    }
+
+    function resetValues() {
+      for (const key of Object.keys(DEFAULTS)) {
+        const [range, number] = fields[key];
+        range.value = DEFAULTS[key];
+        number.value = DEFAULTS[key];
+      }
+      update();
+    }
+
+    for (const [key, [range, number]] of Object.entries(fields)) {
+      range.addEventListener("input", () => syncPair(key, range));
+      number.addEventListener("input", () => syncPair(key, number));
+    }
+
+    $("copyBtn").addEventListener("click", copyResult);
+    $("resetBtn").addEventListener("click", resetValues);
+
+    update();
+  </script>
+</body>
+</html>
